@@ -24,7 +24,8 @@ Personal Tracker is a full-stack web application designed to help users manage a
 
 ### Dashboard & Task Management
 - **Real-Time API Ping**: Checks backend connectivity.
-- **Task Overview**: Display of tasks and project summaries (expandable in future versions).
+- **Task CRUD**: Create, list, edit, complete, and delete your own tasks, with due dates and priorities — each user only sees their own tasks.
+- **Task Filters**: View all, active, or completed tasks.
 - **Logout Functionality**: Quickly end session from dashboard.
 
 ### Frontend UI
@@ -47,7 +48,7 @@ Personal Tracker is a full-stack web application designed to help users manage a
 - **CI/CD Pipelines**: Automated testing, linting, and deployment for production-ready apps.
 
 ### Backend Enhancements
-- **Expanded API**: New endpoints for tasks, projects, and activity logs.
+- **Expanded API**: New endpoints for projects and activity logs.
 - **Role-Based Access Control**: Assign roles and permissions to different users.
 - **JWT Refresh & OAuth**: Improved authentication workflows, including token refresh and third-party OAuth login options.
 - **Logging & Error Tracking**: Integrated backend monitoring tools for easier debugging.

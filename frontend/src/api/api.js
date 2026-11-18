@@ -83,5 +83,36 @@ export const getMe = async () => {
   }
 };
 
+// --- Tasks (JWT-protected, scoped to the logged-in user) ---
+
+export const getTasks = async () => {
+  const res = await api.get("/tasks/");
+  return res.data;
+};
+
+export const createTask = async (task) => {
+  const res = await api.post("/tasks/", task);
+  return res.data;
+};
+
+export const updateTask = async (id, task) => {
+  const res = await api.put(`/tasks/${id}/`, task);
+  return res.data;
+};
+
+export const patchTask = async (id, task) => {
+  const res = await api.patch(`/tasks/${id}/`, task);
+  return res.data;
+};
+
+export const deleteTask = async (id) => {
+  await api.delete(`/tasks/${id}/`);
+};
+
+export const toggleTask = async (id) => {
+  const res = await api.post(`/tasks/${id}/toggle/`);
+  return res.data;
+};
+
 
 export default api;
