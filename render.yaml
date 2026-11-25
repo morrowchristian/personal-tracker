@@ -45,7 +45,6 @@ services:
       - key: GITHUB_OAUTH_CALLBACK_URL
         # TODO: set to the live frontend URL + /auth/github/callback
         # once Vercel deploys, e.g. https://personal-tracker.vercel.app/auth/github/callback
-        value: REPLACE-ME-WITH-VERCEL-URL/auth/github/callback
         sync: false
 databases:
   - name: personal-tracker-db
