@@ -1,0 +1,52 @@
+# Render Blueprint for personal-tracker (Django API + Postgres).
+#
+# Deploy order:
+#   1. Create this Blueprint in the Render dashboard (backend + database).
+#   2. Import the frontend into Vercel (Root Directory: frontend) with
+#      VITE_API_BASE_URL set to this backend's URL + /api
+#      (e.g. https://personal-tracker-backend.onrender.com/api).
+#   3. Update CORS_ALLOWED_ORIGINS below to the Vercel frontend URL,
+#      then redeploy this service.
+services:
+  - type: web
+    name: personal-tracker-backend
+    runtime: python
+    plan: free
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt && python manage.py migrate && python manage.py collectstatic --noinput
+    startCommand: gunicorn backend.wsgi:application
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: 'False'
+      - key: PYTHON_VERSION
+        value: 3.12.0
+      - key: DATABASE_URL
+        fromDatabase:
+          name: personal-tracker-db
+          property: connectionString
+      - key: ALLOWED_HOSTS
+        fromService:
+          type: web
+          name: personal-tracker-backend
+          property: host
+      - key: CORS_ALLOWED_ORIGINS
+        # TODO: replace with the Vercel frontend URL after it deploys,
+        # e.g. https://personal-tracker.vercel.app
+        value: REPLACE-ME-WITH-VERCEL-URL
+      # GitHub sign-in (OAuth) — set manually in the Render dashboard
+      # after the GitHub OAuth app exists; sync:false so Render never
+      # overwrites the values you enter there.
+      - key: GITHUB_CLIENT_ID
+        sync: false
+      - key: GITHUB_CLIENT_SECRET
+        sync: false
+      - key: GITHUB_OAUTH_CALLBACK_URL
+        # TODO: set to the live frontend URL + /auth/github/callback
+        # once Vercel deploys, e.g. https://personal-tracker.vercel.app/auth/github/callback
+        value: REPLACE-ME-WITH-VERCEL-URL/auth/github/callback
+        sync: false
+databases:
+  - name: personal-tracker-db
+    plan: free
