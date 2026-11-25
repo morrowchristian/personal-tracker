@@ -131,4 +131,4 @@ personal-tracker/
 5. Open a pull request.
 
 ## License
-This project is licened under the MIT License.
+This project is licensed under the MIT License.
