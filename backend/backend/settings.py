@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -136,3 +137,14 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# GitHub OAuth (Sign in with GitHub)
+# All values come from the environment; nothing secret is hardcoded.
+# The OAuth app does not exist yet — it is created after the deploy, with
+# the live frontend URL as the callback. See the README for setup steps.
+GITHUB_CLIENT_ID = os.environ.get('GITHUB_CLIENT_ID', '')
+GITHUB_CLIENT_SECRET = os.environ.get('GITHUB_CLIENT_SECRET', '')
+GITHUB_OAUTH_CALLBACK_URL = os.environ.get(
+    'GITHUB_OAUTH_CALLBACK_URL',
+    'http://localhost:5173/auth/github/callback',
+)

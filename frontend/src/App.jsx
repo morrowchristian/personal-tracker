@@ -2,6 +2,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "./context/AuthProvider";
 import LoginPage from "./pages/LoginPage";
+import GitHubCallbackPage from "./pages/GitHubCallbackPage";
 import Dashboard from "./pages/Dashboard";
 
 function PrivateRoute({ children }) {
@@ -22,6 +23,10 @@ export default function App() {
         <Routes>
           <Route path="/" element={<RootRedirect />} />
           <Route path="/login" element={<LoginPage />} />
+          <Route
+            path="/auth/github/callback"
+            element={<GitHubCallbackPage />}
+          />
           <Route
             path="/dashboard"
             element={
