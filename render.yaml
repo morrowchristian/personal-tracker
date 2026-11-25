@@ -34,7 +34,7 @@ services:
       - key: CORS_ALLOWED_ORIGINS
         # TODO: replace with the Vercel frontend URL after it deploys,
         # e.g. https://personal-tracker.vercel.app
-        value: REPLACE-ME-WITH-VERCEL-URL
+        value: https://personal-tracker-indol.vercel.app
       # GitHub sign-in (OAuth) — set manually in the Render dashboard
       # after the GitHub OAuth app exists; sync:false so Render never
       # overwrites the values you enter there.
