@@ -1,134 +1,103 @@
 # Personal Tracker
 
-Personal Tracker is a full-stack web application designed to help users manage and track personal tasks and projects. Built with **React** on the frontend and **Django + DRF** on the backend, this project provides a clean, modular, and secure system for task management with authentication and real-time data updates.
+A full-stack personal task tracker: create, edit, complete, and delete your own tasks, with due dates and priorities. Each user only ever sees their own tasks.
 
----
+Built with **React + Vite** on the frontend and **Django + Django REST Framework** on the backend, with JWT authentication.
 
-## Table of Contents
-- [Features](#features)
-- [Upcoming Features](#upcoming-features)
-- [Tech Stack](#tech-stack)
-- [Getting Started](#getting-started)
-- [Project Structure](#project-structure)
-- [Contributing](#contributing)
-- [License](#license)
+## Live demo
 
----
+Coming soon — deployment is in progress, and this section will link the live app once it's up.
 
 ## Features
 
-### Authentication & User Management
-- **Secure Login/Logout** with JWT authentication.
-- **User Profiles**: View user details such as username, email, and ID.
-- **Protected Routes**: Access to dashboard and user-specific content is restricted to authenticated users only.
+- **Task CRUD** — create, list, edit, and delete tasks; each task has a title, optional description, due date, and priority (low / medium / high).
+- **Toggle complete** — flip a task between active and completed with one click.
+- **Filters** — view All, Active, or Completed tasks.
+- **Per-user isolation** — tasks are scoped to the logged-in user at the API level. Another user's tasks are invisible: they don't appear in lists and can't be retrieved, edited, toggled, or deleted, even by direct id.
+- **JWT authentication** — login with username and password; access and refresh tokens via SimpleJWT. Unauthenticated API requests are rejected with 401.
+- **Dashboard UI** — add form, checkbox list, inline edit, delete with confirmation, empty states, and error handling.
 
-### Dashboard & Task Management
-- **Real-Time API Ping**: Checks backend connectivity.
-- **Task CRUD**: Create, list, edit, complete, and delete your own tasks, with due dates and priorities — each user only sees their own tasks.
-- **Task Filters**: View all, active, or completed tasks.
-- **Logout Functionality**: Quickly end session from dashboard.
+## Tech stack
 
-### Frontend UI
-- **Responsive Design**: Clean and mobile-friendly UI.
-- **Form Handling**: Robust login form with error handling.
-- **Component-Based Architecture**: Modular React components for scalable UI development.
+| Layer | Stack |
+| --- | --- |
+| Frontend | React 19, React Router 7, Axios, Vite 7 |
+| Backend | Django 5.2, Django REST Framework 3.16, SimpleJWT 5.5 |
+| Database | SQLite by default; PostgreSQL supported (`psycopg2-binary` is installed) |
 
-### Backend API
-- **RESTful Endpoints**: Structured API for easy integration with frontend.
-- **Modular App Structure**: Core app with expandable API endpoints for tasks, users, and projects.
-- **DRF Permissions**: Built-in authentication and permission handling with Django REST Framework.
-
----
-
-## Upcoming Features
-
-### Development & Deployment
-- **Docker Support**: Containerization for backend and frontend, enabling seamless deployment.
-- **DevContainers**: VS Code DevContainers for consistent development environments across contributors.
-- **CI/CD Pipelines**: Automated testing, linting, and deployment for production-ready apps.
-
-### Backend Enhancements
-- **Expanded API**: New endpoints for projects and activity logs.
-- **Role-Based Access Control**: Assign roles and permissions to different users.
-- **JWT Refresh & OAuth**: Improved authentication workflows, including token refresh and third-party OAuth login options.
-- **Logging & Error Tracking**: Integrated backend monitoring tools for easier debugging.
-
-### Frontend Enhancements
-- **Dashboard Components**: New components like tables, cards, charts for data visualization.
-- **Dark Mode / Theme Switching**: User-selectable light/dark modes.
-- **Enhanced Error Handling**: Visual feedback for API failures and loading states.
-- **Notifications**: Push notifications for task updates and reminders.
-
-### Analytics & Monitoring
-- **Performance Metrics**: Dashboard for tracking app performance and user engagement.
-- **Activity Logs**: Track user actions for better insights and auditing.
-
-### Future Integrations
-- **Third-Party API Integrations**: For project management, calendar sync, or cloud storage.
-- **Mobile-Friendly Optimizations**: Ready for eventual React Native or PWA support.
-
----
-
-## Tech Stack
-
-**Frontend**: React, React Router, Context API, Axios  
-**Backend**: Django, Django REST Framework  
-**Authentication**: JWT (JSON Web Tokens)  
-**Database**: SQLite (default) / PostgreSQL (optional)  
-**Dev Tools**: VS Code, Git, Vite  
-
----
-
-## Getting Started
+## Getting started
 
 ### Prerequisites
-- Python 3.11+
-- Node.js 18+ and npm / pnpm
-- Git
 
-### Backend Setup
+- Python 3.11+
+- Node.js 18+ and npm
+
+### Backend
+
 ```bash
 cd backend
 python -m venv venv
-venv\Scripts\activate   # Windows
-# source venv/bin/activate  # macOS/Linux
+source venv/bin/activate        # Windows: venv\Scripts\activate
 pip install -r requirements.txt
 python manage.py migrate
+python manage.py createsuperuser   # accounts are created here (or in Django admin); there is no public signup
 python manage.py runserver
 ```
 
-### Frontend Setup
+The API runs at http://localhost:8000/api/.
+
+### Frontend
+
 ```bash
 cd frontend
-npm install   # or pnpm install
-npm run dev   # start development server
+npm install
+npm run dev
 ```
-Visit http://localhost:5173 for the frontend and http://localhost:8000/api/ for the backend API.
 
-## Project Structure
+The app runs at http://localhost:5173. It talks to the backend at `VITE_API_BASE_URL` (defaults to `http://localhost:8000/api`); set `VITE_API_BASE_URL` in a `.env` file to point at another backend.
+
+## API
+
+Base URL: `/api/`
+
+| Endpoint | Method | Description |
+| --- | --- | --- |
+| `/api/ping/` | GET | Backend connectivity check |
+| `/api/token/` | POST | Obtain JWT access + refresh tokens |
+| `/api/token/refresh/` | POST | Refresh the access token |
+| `/api/me/` | GET | Current user's id, username, and email |
+| `/api/tasks/` | GET, POST | List own tasks / create a task |
+| `/api/tasks/<id>/` | GET, PATCH, DELETE | Retrieve / edit / delete own task |
+| `/api/tasks/<id>/toggle/` | POST | Flip a task's completed flag |
+
+All `/api/tasks/` endpoints require authentication and are scoped to the requesting user.
+
+## Tests
+
+Backend tests cover the Task API: create, list isolation, edit, toggle, delete, cross-user access (404), and unauthenticated rejection (401).
+
 ```bash
-personal-tracker/
-├─ backend/
-│  ├─ core/
-│  │  ├─ views.py
-│  │  ├─ urls.py
-│  └─ manage.py
-├─ frontend/
-│  ├─ src/
-│  │  ├─ pages/
-│  │  ├─ components/
-│  │  └─ App.jsx
-├─ .gitignore
-├─ README.md
-└─ requirements.txt
+cd backend
+python manage.py test core
 ```
 
-## Contributing
-1. Fork the repository.
-2. Create a feature branch: git checkout -b feature/your-feature
-3. Commit your changes: git commit -m "Add feature"
-4. Push to branch: git push origin feature/your-feature
-5. Open a pull request.
+## Project structure
+
+```
+personal-tracker/
+├── backend/
+│   ├── backend/        # Django project (settings, urls)
+│   ├── core/           # Task model, serializer, views, urls, tests
+│   └── manage.py
+├── frontend/
+│   └── src/
+│       ├── api/        # Axios client + task/auth calls
+│       ├── context/    # Auth provider
+│       ├── pages/      # Dashboard, login
+│       └── main.jsx
+└── README.md
+```
 
 ## License
+
 This project is licensed under the MIT License.
