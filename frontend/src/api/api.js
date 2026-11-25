@@ -68,6 +68,35 @@ export const logout = () => {
   store.onLogout();
 };
 
+// --- Sign in with GitHub (OAuth 2.0) ---
+
+const GITHUB_STATE_KEY = "github_oauth_state";
+
+// Start the flow: fetch the GitHub authorize URL from the backend, save
+// the state token, then send the browser to GitHub.
+export const startGitHubLogin = async () => {
+  const res = await api.get("/auth/github/");
+  const { authorize_url, state } = res.data;
+  sessionStorage.setItem(GITHUB_STATE_KEY, state);
+  window.location.href = authorize_url;
+};
+
+// Finish the flow on the callback page: verify the state token, then
+// exchange the code for JWTs and store them like a normal login.
+export const finishGitHubLogin = async (code, state) => {
+  const expected = sessionStorage.getItem(GITHUB_STATE_KEY);
+  sessionStorage.removeItem(GITHUB_STATE_KEY);
+  if (!expected || state !== expected) {
+    throw new Error("GitHub sign-in state mismatch — please try again.");
+  }
+  const res = await api.post("/auth/github/callback/", { code });
+  const { access, refresh } = res.data;
+  setAuthTokens(access, refresh);
+  localStorage.setItem("access", access);
+  localStorage.setItem("refresh", refresh);
+  return res.data;
+};
+
 export const ping = async () => {
   const res = await api.get("/ping/");
   return res.data;
