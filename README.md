@@ -6,7 +6,10 @@ Built with **React + Vite** on the frontend and **Django + Django REST Framework
 
 ## Live demo
 
-Coming soon — deployment is in progress, and this section will link the live app once it's up.
+- **App:** https://personal-tracker-indol.vercel.app
+- **Backend:** https://personal-tracker-backend-8rnx.onrender.com
+
+Sign in with GitHub. The backend is on Render's free tier, so the first load after idle can take ~50s to wake up.
 
 ## Features
 
@@ -95,15 +98,9 @@ All OAuth config comes from environment variables — nothing is hardcoded:
 
 The callback URL format is `<frontend-origin>/auth/github/callback` — locally `http://localhost:5173/auth/github/callback`, in production the live frontend URL plus `/auth/github/callback`.
 
-### Post-deploy setup (not done yet)
+### Live setup (done)
 
-> The GitHub OAuth app does **not** exist yet, and the flow has **not** been tested against live GitHub. The code is complete and covered by mocked tests (see below); these steps run once the live demo exists:
-
-1. Create the OAuth app at GitHub → Settings → Developer settings → OAuth Apps → New OAuth App. Set the **Authorization callback URL** to the live frontend URL plus `/auth/github/callback` (for example `https://<your-vercel-app>.vercel.app/auth/github/callback`). Homepage URL is the live frontend URL.
-2. Copy the Client ID and generate a Client secret.
-3. Set `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET`, and `GITHUB_OAUTH_CALLBACK_URL` (the full live callback URL from step 1) as environment variables on the backend host (Render).
-4. Redeploy the backend. The frontend needs no extra env vars — it asks the backend for the authorize URL.
-5. Test: click **Sign in with GitHub** on the live login page and confirm it lands on the dashboard.
+The GitHub OAuth app exists (callback `https://personal-tracker-indol.vercel.app/auth/github/callback`), the three env vars (`GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET`, `GITHUB_OAUTH_CALLBACK_URL`) are set on Render, and the flow is verified end to end live — signing in with GitHub creates/links the account and lands on the dashboard. The frontend needs no extra env vars — it asks the backend for the authorize URL.
 
 Local dev works the same way with a second OAuth app (or the same one with the localhost callback added): set the three env vars before `python manage.py runserver`.
 
