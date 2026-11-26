@@ -1,4 +1,7 @@
 # backend/core/views.py
+import secrets
+from datetime import date, timedelta
+
 from django.contrib.auth import get_user_model
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
@@ -118,6 +121,76 @@ class GitHubCallbackView(APIView):
                 {"detail": str(exc)}, status=status.HTTP_400_BAD_REQUEST
             )
         user = _get_or_create_user_for_github(github_user)
+        refresh = RefreshToken.for_user(user)
+        return Response(
+            {"access": str(refresh.access_token), "refresh": str(refresh)}
+        )
+
+
+def _create_demo_user():
+    """Create a fresh demo user seeded with sample tasks.
+
+    The username is random per call (demo-<8 hex chars), so every
+    visitor gets their own isolated task list and can never see or
+    change another visitor's tasks — or Christian's. The account is
+    created with no password (an unusable one), so it can never sign
+    in via /api/token/ — the only way in is the JWTs this endpoint
+    issues. Due dates are relative to today so the demo never shows
+    stale dates.
+    """
+    while True:
+        username = f"demo-{secrets.token_hex(4)}"
+        if not User.objects.filter(username=username).exists():
+            break
+    user = User.objects.create_user(username=username)
+    today = date.today()
+    Task.objects.bulk_create(
+        [
+            Task(
+                owner=user,
+                title="Plan the weekend trip",
+                description="Book the cabin and check the weather forecast.",
+                priority=Task.Priority.HIGH,
+                due_date=today + timedelta(days=2),
+            ),
+            Task(
+                owner=user,
+                title="Buy groceries",
+                description="Milk, eggs, bread, and coffee beans.",
+                priority=Task.Priority.MEDIUM,
+                due_date=today + timedelta(days=1),
+            ),
+            Task(
+                owner=user,
+                title="Read the new Django release notes",
+                priority=Task.Priority.LOW,
+            ),
+            Task(
+                owner=user,
+                title="Set up the project board",
+                description="Columns: To do, Doing, Done.",
+                priority=Task.Priority.MEDIUM,
+                completed=True,
+            ),
+        ]
+    )
+    return user
+
+
+class DemoLoginView(APIView):
+    """One-click demo login: create a fresh demo user and return JWTs.
+
+    POST {} -> {"access": "<jwt>", "refresh": "<jwt>"}.
+
+    This is the only way a demo user comes into existence — it is not
+    a general signup. The normal login (POST /api/token/) and the
+    GitHub sign-in flow are unchanged.
+    """
+
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        user = _create_demo_user()
         refresh = RefreshToken.for_user(user)
         return Response(
             {"access": str(refresh.access_token), "refresh": str(refresh)}

@@ -97,6 +97,20 @@ export const finishGitHubLogin = async (code, state) => {
   return res.data;
 };
 
+// --- One-click demo login ---
+// POST /api/auth/demo/ creates a fresh demo user (seeded with sample
+// tasks) and returns JWTs. No password is ever sent from, or stored in,
+// the frontend — the backend issues the tokens, and they are stored
+// exactly the way a normal login stores them.
+export const demoLogin = async () => {
+  const res = await api.post("/auth/demo/");
+  const { access, refresh } = res.data;
+  setAuthTokens(access, refresh);
+  localStorage.setItem("access", access);
+  localStorage.setItem("refresh", refresh);
+  return res.data;
+};
+
 export const ping = async () => {
   const res = await api.get("/ping/");
   return res.data;

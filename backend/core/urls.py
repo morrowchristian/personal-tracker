@@ -2,7 +2,14 @@
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
-from .views import GitHubCallbackView, GitHubLoginView, MeView, PingView, TaskViewSet
+from .views import (
+    DemoLoginView,
+    GitHubCallbackView,
+    GitHubLoginView,
+    MeView,
+    PingView,
+    TaskViewSet,
+)
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 router = DefaultRouter()
@@ -18,6 +25,7 @@ urlpatterns = [
         GitHubCallbackView.as_view(),
         name="github_callback",
     ),
+    path("auth/demo/", DemoLoginView.as_view(), name="demo_login"),
     path("me/", MeView.as_view(), name="me"),
     path("", include(router.urls)),
 ]
